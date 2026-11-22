@@ -1,6 +1,6 @@
 # CausalPFN on large uplift tables: a small experiment
 
-*Lucas Liu, November 2026*
+*Lucas Liu, November 22 2026*
 
 The CausalPFN paper notes that on full-size marketing tables the model falls behind simple
 baselines (Table 7, most visibly on X5), and Appendix D.6 guesses that the way context rows are
