@@ -19,6 +19,9 @@ weekend testing it.
 3. **Giving the weak learner's estimate to the model as an input column works better than
    using it to pick rows.** Against the default pipeline it is clearly better on 3 of 8 tables
    (full X5: 0.607 to 0.790) and worse on none.
+4. **The weak learner can be made far faster without changing any of this.** Swapping
+   the repo's gradient boosting for scikit-learn's histogram-based one cuts a fit on full Megafon
+   from about 2800 s to about 5 s, and the results stay the same.
 
 ![Qini of five methods on eight tables](figures/main_qini.png)
 
@@ -107,13 +110,28 @@ is inside the interval. A few more things worth knowing:
 - **It is stable across tables.** The all-chunks version is never more than 0.034 behind the
   best of {weak learner alone, default pipeline, itself}. The weak learner alone is up to 0.133
   behind and the default pipeline up to 0.207.
-- **It does not depend on the exact weak learner, and the weak learner can be much faster.** I
-  swapped the repo's `GradientBoostingRegressor` for scikit-learn's histogram-based one with the
-  same settings. One fit on full Megafon then takes about 5 s instead of about 2800 s, and the
-  picture is the same: default pipeline to all chunks goes 0.601 to 0.809 on full X5 and 1.182
-  to 1.213 on Megafon 50K.
 - I came up with this while looking at X5 results, so X5 is the table it was designed on.
   Megafon, Hillstrom and Lenta were run afterwards with nothing changed.
+
+## 4. A faster weak learner
+
+The change above needs six weak-learner fits per table instead of one (one on all rows, five for
+the cross-fitting). With the repo's `GradientBoostingRegressor` that becomes the main cost on
+big tables. I swapped it for scikit-learn's `HistGradientBoostingRegressor` with the same number
+of trees, depth, leaf size and seed, and reran the comparison:
+
+| | Repo's weak learner | Histogram-based |
+|---|---|---|
+| One fit, full Megafon (480K rows) | about 2800 s | about 5 s |
+| One fit, full X5 (160K rows) | about 49 s | about 1 s |
+| Full X5: default pipeline / all chunks | 0.607 / 0.790 | 0.601 / 0.809 |
+| Megafon 50K: default pipeline / all chunks | 1.170 / 1.206 | 1.182 / 1.213 |
+| Full Megafon, all chunks: transformer + six fits per fold | 920 s + 13400 s | 920 s + 18 s |
+
+Same conclusions on every table I reran (X5, Megafon and Hillstrom), and on full X5 the new
+variant is now level with the weak learner alone (-0.004 [-0.029, +0.019]). The histogram version
+uses all CPU cores where the repo's uses one, and the timings are from shared machines, so treat
+them as orders of magnitude.
 
 ## What this does not show
 
