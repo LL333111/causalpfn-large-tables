@@ -107,9 +107,11 @@ is inside the interval. A few more things worth knowing:
 - **It is stable across tables.** The all-chunks version is never more than 0.034 behind the
   best of {weak learner alone, default pipeline, itself}. The weak learner alone is up to 0.133
   behind and the default pipeline up to 0.207.
-- **It does not depend on the exact weak learner.** With scikit-learn's histogram-based
-  gradient boosting (same settings, fits in seconds instead of minutes) the picture is the same:
-  full X5 0.601 to 0.809, Megafon 50K 1.182 to 1.213.
+- **It does not depend on the exact weak learner, and the weak learner can be much faster.** I
+  swapped the repo's `GradientBoostingRegressor` for scikit-learn's histogram-based one with the
+  same settings. One fit on full Megafon then takes about 5 s instead of about 2800 s, and the
+  picture is the same: default pipeline to all chunks goes 0.601 to 0.809 on full X5 and 1.182
+  to 1.213 on Megafon 50K.
 - I came up with this while looking at X5 results, so X5 is the table it was designed on.
   Megafon, Hillstrom and Lenta were run afterwards with nothing changed.
 
