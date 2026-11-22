@@ -28,14 +28,17 @@ Brackets are 95% bootstrap intervals, paired over the same test rows for differe
 ## What CausalPFN does with a big table
 
 CausalPFN reads a set of rows with known treatment and outcome (the context) and predicts for
-new rows. The context is limited, so for big tables the released code does this:
+new rows. The context is limited, so the released code does this:
 
 1. fit a gradient-boosting S-learner on the training rows (the weak learner), which gives a
    rough effect estimate per row;
 2. sort the rows to predict by that estimate and cut them into batches of about 4K;
 3. for each batch, show the model the training rows whose estimates are closest to the batch.
 
-The model never sees the estimate. It only sees the rows that were picked with it.
+The model never sees the estimate. It only sees the rows that were picked with it. The paper
+describes this as a fallback for tables that do not fit in the context; at commit `b7ed2f1` it
+runs for every table, and on the 50K samples each batch still gets only about 10K context rows.
+That is why the 50K tables show up below as well.
 
 ## 1. The ranking mostly comes from the weak learner
 
@@ -116,16 +119,19 @@ is inside the interval. A few more things worth knowing:
   CausalPFN from losing there; it does not beat the weak learner.
 - Megafon is the only dataset where the transformer clearly adds something on top of the weak
   learner (+0.068 [+0.061, +0.076] on the full table).
-- One seed for the folds, baselines with default settings, and Lenta is too noisy to separate
-  anything.
+- The baselines I ran are the repo's with default settings. The tuned ones in the paper are much
+  stronger (in Table 7 the X, DA and T learners are ahead of CausalPFN on full Megafon), so
+  nothing here is a claim about beating those.
+- One seed for the folds, and Lenta is too noisy to separate anything.
 
 ## Setup and code
 
 Same protocol as the repo's `notebooks/qini.ipynb` (5 stratified folds, seed 82718,
 `max_context_length=50_000`), CausalPFN at commit `b7ed2f1`, unmodified. As a check, the ratio
-of the default pipeline to its weak learner in my runs matches the paper's ratio of CausalPFN to
-its "S Learner" row to three digits on 6 of 7 tables (full X5: 0.746 and 0.746), which makes me
-think that row is this same gradient-boosting model.
+of the default pipeline to its weak learner in my runs agrees with the paper's ratio of CausalPFN
+to its "S Learner" row within 0.001 on all six X5, Megafon and Hillstrom tables (full X5: 0.746
+and 0.746), though not on the two Lenta tables. That makes me think the S Learner row is this
+same gradient-boosting model.
 
 ```bash
 git clone https://github.com/vdblm/CausalPFN && (cd CausalPFN && git checkout b7ed2f1 && pip install -e ".[dev]")

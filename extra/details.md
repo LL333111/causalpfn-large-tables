@@ -13,9 +13,40 @@ unless stated; brackets are 95% bootstrap intervals, paired for differences.
 | Hillstrom, women's campaign | 42,693 | 10 | 50.1% | 12.9% | 0.045 | full |
 | Hillstrom, men's campaign | 42,613 | 10 | 50.0% | 14.4% | 0.077 | full |
 
-80% of a table is context, 20% is predicted, five times. Chunk size (10K) and "use all chunks"
+80% of a table is context, 20% is predicted, five times. Data come from the repo's own dataset
+classes (`X5Dataset`, `MegafonDataset`, `LentaDataset`, `HillstromDataset` with outcome `visit`
+and control arm `No E-Mail`), and Qini is the repo's `get_qini_curve` formula on the five folds
+pooled, as in `notebooks/qini.ipynb`. Chunk size (10K) and "use all chunks"
 were fixed before looking at test folds. `src/strategies.py` re-implements the default pipeline
 with extra bookkeeping; its output is identical to the original (`results/smoke_test.json`).
+
+## Check against the paper
+
+The paper (arXiv 2506.07918v2, Tables 2 and 7) normalises each column by its best method, so only
+ratios of rows can be compared. Default pipeline divided by weak learner in my runs, against
+CausalPFN divided by "S Learner" in the paper:
+
+| Table | Here | Paper |
+|---|---|---|
+| X5 50K | 0.9225 | 0.922 |
+| X5 full | 0.7455 | 0.746 |
+| Megafon 50K | 1.0312 | 1.031 |
+| Megafon full | 1.0446 | 1.045 |
+| Hillstrom, men's (paper's Hill(1)) | 0.9925 | 0.992 |
+| Hillstrom, women's (paper's Hill(2)) | 0.9677 | 0.968 |
+| Lenta 50K | 1.25 | 1.536 |
+| Lenta full | 0.879 | 0.947 |
+
+Six of eight agree within rounding. Lenta does not; it is the wide table (193 columns, reduced
+by SVD before anything else) and the one where the weak learner's output is mostly ties, so I
+would not read much into either Lenta number. I do not know which code produced the paper's
+S Learner row; the repo's `SLearnerBaseline(hpo=False)` is a random forest and scores much lower
+here.
+
+One more thing I noticed: the paper describes the row-picking as a fallback for tables that do
+not fit in the context. At commit `b7ed2f1`, `_predict_cepo` always uses it. On the 50K samples
+(40K training rows, `max_context_length=50_000`) each batch of about 4K queries gets roughly 10K
+context rows.
 
 ## All eight tables
 
@@ -108,7 +139,10 @@ The repo's S / T / X / DA learners with default settings (`hpo=False`):
 | Lenta full | 0.497 | 0.498 | 0.415 | 0.529 | 0.621 | 0.546 | 0.587 |
 
 On X5 the X and DA learners are as good as the weak learner. On Megafon everything that
-combines CausalPFN with the estimate is far ahead of all four.
+combines CausalPFN with the estimate is far ahead of these four, but these are default-setting
+random forests. The paper's baselines are tuned and much stronger there: in its Table 7 the DA,
+X and T learners score 1.000, 0.997 and 0.987 on full Megafon against 0.954 for CausalPFN. So
+this table is not a comparison with the paper's baselines.
 
 A note on ties: the S learner predicts exactly zero for about 65% of X5 rows (and for every row
 on Lenta 50K), and the weak learner is constant on most Lenta 50K folds. Qini then depends on
