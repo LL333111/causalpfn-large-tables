@@ -1,0 +1,9 @@
+CausalPFN on large uplift tables: a small experiment
+Copyright 2026 Lucas Liu
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+src/strategies.py contains a re-implementation of the large-table context
+selection in CausalPFN (https://github.com/vdblm/CausalPFN, commit b7ed2f1,
+`CausalEstimator._predict_cepo`), with bookkeeping and alternative strategies
+added. CausalPFN itself is not included in this repository.

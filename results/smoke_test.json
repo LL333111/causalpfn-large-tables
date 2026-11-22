@@ -1,0 +1,150 @@
+{
+ "device": "cuda",
+ "torch": "2.8.0+cu128",
+ "gpu": "NVIDIA A40",
+ "equivalence_with_repo": {
+  "defaults": {
+   "max_abs_diff": 0.0,
+   "corr": 1.0,
+   "n_batches": 5,
+   "ctx_rows": [
+    4090,
+    4090,
+    4090,
+    3938,
+    2048
+   ],
+   "tau_mean_repo": 0.07209764420986176,
+   "tau_sd_repo": 0.17107835412025452,
+   "output_shape": [
+    2000
+   ]
+  },
+  "max_ctx_50k": {
+   "max_abs_diff": 0.0,
+   "corr": 0.9999999999999998,
+   "n_batches": 2,
+   "ctx_rows": [
+    10000,
+    2048
+   ],
+   "tau_mean_repo": 0.06380541622638702,
+   "tau_sd_repo": 0.010324826464056969,
+   "output_shape": [
+    2000
+   ]
+  }
+ },
+ "chunks": {
+  "full_vs_argument_only_full_max_abs_diff": 3.5762786865234375e-07,
+  "full_vs_argument_only_full_corr": 0.9999999999390112,
+  "A_4chunks_vs_full_corr": 0.9678361350456601,
+  "n_chunks": 4,
+  "chunk_sizes": [
+   2500,
+   2500,
+   2500,
+   2500
+  ]
+ },
+ "forward_pass": [
+  {
+   "context": 4096,
+   "queries": 4096,
+   "seconds": 0.17134809494018555,
+   "peak_gb": 0.4672222137451172,
+   "ok": true
+  },
+  {
+   "context": 4096,
+   "queries": 16384,
+   "seconds": 0.4159729480743408,
+   "peak_gb": 0.6844310760498047,
+   "ok": true
+  },
+  {
+   "context": 10000,
+   "queries": 4096,
+   "seconds": 0.6877241134643555,
+   "peak_gb": 0.6145114898681641,
+   "ok": true
+  },
+  {
+   "context": 10000,
+   "queries": 16384,
+   "seconds": 1.2883257865905762,
+   "peak_gb": 0.8318047523498535,
+   "ok": true
+  },
+  {
+   "context": 16000,
+   "queries": 4096,
+   "seconds": 1.5736470222473145,
+   "peak_gb": 0.7681918144226074,
+   "ok": true
+  },
+  {
+   "context": 16000,
+   "queries": 16384,
+   "seconds": 2.5464327335357666,
+   "peak_gb": 0.9846682548522949,
+   "ok": true
+  },
+  {
+   "context": 25000,
+   "queries": 4096,
+   "seconds": 3.6150341033935547,
+   "peak_gb": 0.9878482818603516,
+   "ok": true
+  },
+  {
+   "context": 25000,
+   "queries": 16384,
+   "seconds": 5.156142234802246,
+   "peak_gb": 1.204202651977539,
+   "ok": true
+  },
+  {
+   "context": 32000,
+   "queries": 4096,
+   "seconds": 5.775303602218628,
+   "peak_gb": 1.160313606262207,
+   "ok": true
+  },
+  {
+   "context": 32000,
+   "queries": 16384,
+   "seconds": 7.714244604110718,
+   "peak_gb": 1.3771142959594727,
+   "ok": true
+  },
+  {
+   "context": 40000,
+   "queries": 4096,
+   "seconds": 8.836414575576782,
+   "peak_gb": 1.3594255447387695,
+   "ok": true
+  },
+  {
+   "context": 40000,
+   "queries": 16384,
+   "seconds": 11.314919471740723,
+   "peak_gb": 1.5769309997558594,
+   "ok": true
+  },
+  {
+   "context": 50000,
+   "queries": 4096,
+   "seconds": 13.637967824935913,
+   "peak_gb": 1.614302158355713,
+   "ok": true
+  },
+  {
+   "context": 50000,
+   "queries": 16384,
+   "seconds": 16.69827938079834,
+   "peak_gb": 1.8328957557678223,
+   "ok": true
+  }
+ ]
+}
